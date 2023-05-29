@@ -369,3 +369,81 @@ class App:
             average_amount = result.single()["average_amount"]
             print(f" >> Retiro promedio para cliente con DPI {account_id}: {average_amount}")
             return average_amount
+        
+    def get_top_accounts_with_fraud_relations(self):
+        with self.driver.session(database="neo4j") as session:
+            result = session.run(
+                "MATCH (c:Cuenta)-[r:INVOLUCRADA_EN]->(f:Fraude)"
+                "WITH c, COUNT(r) AS fraud_count"
+                "RETURN c"
+                "ORDER BY fraud_count DESC"
+                "LIMIT 5"
+            )
+            accounts = [row["c"] for row in result]
+            print(' >> Devolviendo nodos cuenta top 5 en fraudes')
+            return accounts
+
+    def get_client_names_related_to_fraud(self):
+        with self.driver.session(database="neo4j") as session:
+            result = session.run(
+                "MATCH (cl:Cliente)-[:ES_PROPIETARIO]->(c:Cuenta)-[:INVOLUCRADA_EN]->(f:Fraude)"
+                "RETURN cl.nombre AS nombre"
+            )
+            client_names = [row["nombre"] for row in result]
+            print(' >> Devolviendo nombres de clientes owner de cuentas en fraudes')
+            return client_names
+        
+    def count_banks_related_to_fraud(self):
+        with self.driver.session(database="neo4j") as session:
+            result = session.run(
+                "MATCH (c:Cuenta)-[:INVOLUCRADA_EN]->(f:Fraude)"
+                "RETURN c.banco AS banco, count(*) AS count"
+            )
+            bank_counts = {row["banco"]: row["count"] for row in result}
+            print(' >> Devolviendo nombres de bancos en fraudes')
+            return bank_counts
+        
+    def get_top_5_high_amount_transactions_related_to_fraud(self):
+        with self.driver.session(database="neo4j") as session:
+            result = session.run(
+                "MATCH (f:Fraude)<-[:INVOLUCRADA_EN]-(c:Cuenta)-[t:REALIZA]->(t2:Transferencia)"
+                "RETURN t2.numero_transferencia AS numero_transferencia, t2.monto AS monto"
+                "ORDER BY t2.monto DESC"
+                "LIMIT 5"
+            )
+            transactions = [(row["numero_transferencia"], row["monto"]) for row in result]
+            return transactions
+    
+    def get_top_5_high_amount_withdrawals_related_to_fraud(self):
+        with self.driver.session(database="neo4j") as session:
+            result = session.run(
+                "MATCH (f:Fraude)<-[:INVOLUCRADA_EN]-(c:Cuenta)-[r:INVOLUCRA]->(r2:Retiro)"
+                "RETURN r2.numero_retiro AS numero_retiro, r2.monto AS monto"
+                "ORDER BY r2.monto DESC"
+                "LIMIT 5"
+            )
+            withdrawals = [(row["numero_retiro"], row["monto"]) for row in result]
+            return withdrawals
+
+
+    def disable_account(self, account_number):
+        with self.driver.session(database="neo4j") as session:
+            result = session.run(
+                "MATCH (c:Cuenta {numero_cuenta: $account_number})"
+                "SET c.habilitada = False"
+                "RETURN c"
+                , account_number=account_number
+            )
+            print(f' >> Cuenta {account_number} deshabilitada')
+            return result.single()["c"]
+
+    def is_account_enabled(self, account_number):
+        with self.driver.session(database="neo4j") as session:
+            result = session.run(
+                "MATCH (c:Cuenta {numero_cuenta: $account_number})"
+                "RETURN c.habilitada AS habilitada"
+                , account_number=account_number
+            )
+            return result.single()["habilitada"]
+
+
