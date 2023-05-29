@@ -10,7 +10,10 @@ if __name__ == "__main__":
 
     app = App(uri,user,password) #instanciar backend y la conexion a Cypher.
 
+    '''
+    if monto 
+    '''
 
 
-    #if salir del frontend
+    # if salir del frontend
     app.close()
