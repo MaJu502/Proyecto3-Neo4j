@@ -445,5 +445,15 @@ class App:
                 , account_number=account_number
             )
             return result.single()["habilitada"]
+    
+    def get_account_bank(self, account_number):
+        with self.driver.session(database="neo4j") as session:
+            result = session.run(
+                "MATCH (c:Cuenta {numero_cuenta: $account_number})"
+                "RETURN c.banco AS banco"
+                , account_number=account_number
+            )
+            return result.single()["banco"]
+
 
 
