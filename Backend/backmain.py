@@ -455,5 +455,69 @@ class App:
             )
             return result.single()["banco"]
 
+    def delete_account(self, account_number):
+        with self.driver.session(database="neo4j") as session:
+            result = session.run(
+                "MATCH (c:Cuenta {numero_cuenta: $account_number})"
+                "DELETE c"
+                , account_number=account_number
+            )
+            return result.summary().counters.nodes_deleted > 0
+        
+    def update_involucra_motivo(self, account_number, fraud_number, new_motivo):
+        with self.driver.session(database="neo4j") as session:
+            result = session.run(
+                "MATCH (c:Cuenta {numero_cuenta: $account_number})"
+                "-[r:INVOLUCRA]->(f:Fraude {numero_fraude: $fraud_number})"
+                "SET r.motivo = $new_motivo"
+                , account_number=account_number
+                , fraud_number=fraud_number
+                , new_motivo=new_motivo
+            )
+            return result.summary().counters.relationships_updated > 0
+    
+    def update_cuenta_banco(self, account_number, new_banco):
+        with self.driver.session(database="neo4j") as session:
+            result = session.run(
+                "MATCH (c:Cuenta {numero_cuenta: $account_number})"
+                "SET c.banco = $new_banco"
+                , account_number=account_number
+                , new_banco=new_banco
+            )
+            return result.summary().counters.nodes_updated > 0
+        
+    def delete_involucra_relationship(self, account_number, fraud_number):
+        with self.driver.session(database="neo4j") as session:
+            result = session.run(
+                "MATCH (c:Cuenta {numero_cuenta: $account_number})-[r:INVOLUCRA]->(f:Fraude {numero_fraude: $fraud_number})"
+                "DELETE r"
+                , account_number=account_number
+                , fraud_number=fraud_number
+            )
+            return result.summary().counters.relationships_deleted > 0
+        
+    def delete_fecha_alerta(self, fraud_number):
+        with self.driver.session(database="neo4j") as session:
+            result = session.run(
+                "MATCH (f:Fraude {numero_fraude: $fraud_number})"
+                "REMOVE f.fecha_alerta"
+                , fraud_number=fraud_number
+            )
+            return result.summary().counters.properties_removed > 0
+        
+    def delete_parentesco_tipo(self, cliente1_id, cliente2_id):
+        with self.driver.session(database="neo4j") as session:
+            result = session.run(
+                "MATCH (c1:Cliente)-[p:parentesco]-(c2:Cliente) "
+                "WHERE DPI(c1) = $cliente1_id AND DPI(c2) = $cliente2_id "
+                "REMOVE p.tipo"
+                , cliente1_id=cliente1_id, cliente2_id=cliente2_id
+            )
+            return result.summary().counters.relationships_removed > 0
+
+
+
+
+
 
 
