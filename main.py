@@ -4,9 +4,9 @@ from Backend.backmain import App
 
 
 if __name__ == "__main__":
-    uri = "neo4j+s://b5ae0841.databases.neo4j.io "
+    uri = "neo4j+s://1ec7fe72.databases.neo4j.io"
     user = "neo4j"
-    password = "L7lYs5A1-8jg-tDnY6Fs52C3jAfz42CTHaeJvfGSgOc"
+    password = "fJqmpIyc4lLAOb4CAOV-RlwHeQxXstncLEkkMpQcg_Q"
 
     app = App(uri,user,password) #instanciar backend y la conexion a Cypher.
 
@@ -23,6 +23,7 @@ if __name__ == "__main__":
             > se devuelve mensaje de error
         - si no cumple condicion se hace la transaccion
     '''
+    
 
 
     # if salir del frontend
