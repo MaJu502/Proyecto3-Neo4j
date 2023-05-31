@@ -2,15 +2,16 @@ from random import choice
 from flet import *
 import flet as ft
 from flet import animation, alignment, border, transform, padding
-from screens import CreateTransferencia, CreateRetiro
+
+from .transferencia import Transferencia
+from .retiro import Retiro
 
 
 class create_homepage(UserControl):
-    def __init__(self, page, Admin=False, DPI=None):
+    def __init__(self, page, Admin=False):
         super().__init__()
         self.page = page
         self.Admin = Admin
-        self.DPI = DPI
 
     def build(self):
 
@@ -46,8 +47,6 @@ class create_homepage(UserControl):
                     icon="supervisor_account", label='Cuentas'),
             ]
 
-        adminDestinations = []
-
         barMenu = NavigationBar(
             bgcolor="blue",
             on_change=changetab,
@@ -55,11 +54,11 @@ class create_homepage(UserControl):
             destinations=Destinations
         )
 
-        page1 = CreateTransferencia(self.page)
+        page1 = Transferencia(self.page, self.page.height)
 
-        page2 = CreateRetiro(self.page)
+        page2 = Retiro(self.page, self.page.height)
 
-        page3 = CreateRetiro(self.page)
+        page3 = Retiro(self.page, self.page.height)
 
         switch_control = Column(
             expand=False,

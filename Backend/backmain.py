@@ -7,26 +7,26 @@ import logging
 from datetime import datetime
 from neo4j.exceptions import ServiceUnavailable
 
+
 class App:
     def __init__(self, uri, user, password) -> None:
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
+
     def close(self):
         self.driver.close()
 
-    def create_node(self, node_label, attributes):
+    def create_node(self, node_labels, attributes):
         '''
         necesita:
-            - label del nodo
+            - lista de labels del nodo
             - atributos del nodo
         '''
-        query = f"CREATE (n:{node_label} {{ {', '.join([f'{k}: ${k}' for k in attributes.keys()])} }}) RETURN n"
+        query = f"CREATE (n:{':'.join(node_labels)} {{ {', '.join([f'{k}: ${k}' for k in attributes.keys()])} }}) RETURN n"
         with self.driver.session(database="neo4j") as session:
             result = session.run(query, **attributes)
             node = result.single()[0]
             print(f' >> Node creado: {node}')
             return node
-
-
 
     def create_transaccion_relationship(self, account1_number, account2_number, transaction_number, divisa, monto, fecha, tipo_cuenta):
         '''
@@ -52,7 +52,8 @@ class App:
                 monto=monto,
                 fecha=fecha
             )
-            print(f" >> REALIZA: Transaction relationship created from {account1_number} to {transaction_number}")
+            print(
+                f" >> REALIZA: Transaction relationship created from {account1_number} to {transaction_number}")
 
             result2 = session.run(
                 "MATCH (t1:Transferencia {numero_transferencia: $transaction_number})"
@@ -67,7 +68,8 @@ class App:
                 monto=monto,
                 fecha=fecha
             )
-            print(f" >> INVOLUCRA: Transaction relationship created from {transaction_number} to {account2_number}")
+            print(
+                f" >> INVOLUCRA: Transaction relationship created from {transaction_number} to {account2_number}")
             return [result1, result2]
 
     def create_fraud_relationship_transferencia(self, transferencia_numero, fraud_id, cuenta_numero, motivo, monto, fecha):
@@ -92,7 +94,8 @@ class App:
                 monto=monto,
                 fecha=fecha
             )
-            print(f" >> GENERO: Fraud relationship created for Transferencia {transferencia_numero} and Fraud {fraud_id}")
+            print(
+                f" >> GENERO: Fraud relationship created for Transferencia {transferencia_numero} and Fraud {fraud_id}")
 
             result2 = session.run(
                 "MATCH (c:Cuenta {numero_cuenta: $cuenta_numero})"
@@ -104,7 +107,8 @@ class App:
                 motivo=motivo,
                 fecha=fecha
             )
-            print(f" >> INVOLUCRADA_EN: Fraud relationship created for Cuenta {cuenta_numero} and Fraud {fraud_id}")
+            print(
+                f" >> INVOLUCRADA_EN: Fraud relationship created for Cuenta {cuenta_numero} and Fraud {fraud_id}")
 
             return [result1, result2]
 
@@ -129,7 +133,8 @@ class App:
                 fecha=fecha,
                 comentarios=comentarios
             )
-            print(f" >> ES_PROPIETARIO_DE: Ownership relationship created for client {cliente_id} on account {cuenta_numero}")
+            print(
+                f" >> ES_PROPIETARIO_DE: Ownership relationship created for client {cliente_id} on account {cuenta_numero}")
 
             result2 = session.run(
                 "MATCH (c:Cliente {DPI: $cliente_id})"
@@ -142,11 +147,11 @@ class App:
                 fecha=fecha,
                 beneficiario=True
             )
-            print(f" >> TIENE: relationship created for client {cliente_id} on account {cuenta_numero}")
-            
+            print(
+                f" >> TIENE: relationship created for client {cliente_id} on account {cuenta_numero}")
+
             return [result1, result2]
-        
-    
+
     def create_tiene_cuenta_relationship(self, cuenta_numero, cliente_id, titular, beneficiario, fecha):
         '''
         necesita:
@@ -168,10 +173,11 @@ class App:
                 fecha=fecha,
                 beneficiario=beneficiario
             )
-            print(f" >> TIENE: relationship created for client {cliente_id} on account {cuenta_numero}")
+            print(
+                f" >> TIENE: relationship created for client {cliente_id} on account {cuenta_numero}")
 
             return result
-        
+
     def create_parentesco_relationship(self, cliente_id1, cliente_id2, tipo, grado, familia):
         '''
         necesita:
@@ -193,7 +199,8 @@ class App:
                 grado=grado,
                 familia=familia
             )
-            print(f" >> PARENTESCO: relationship created for client {cliente_id1} with {cliente_id2}")
+            print(
+                f" >> PARENTESCO: relationship created for client {cliente_id1} with {cliente_id2}")
 
             return result
 
@@ -220,7 +227,8 @@ class App:
                 divisa=divisa,
                 fecha=fecha
             )
-            print(f" >> INVOLUCRA: Withdrawal relationship created for Retiro {retiro_id} and Cuenta {cuenta_numero}")
+            print(
+                f" >> INVOLUCRA: Withdrawal relationship created for Retiro {retiro_id} and Cuenta {cuenta_numero}")
 
             result2 = session.run(
                 "MATCH (cl:Cliente {DPI: $cliente_id})"
@@ -233,7 +241,8 @@ class App:
                 monto=monto,
                 fecha=fecha
             )
-            print(f" >> REALIZA: Withdrawal relationship created for Cliente {cliente_id} and Retiro {retiro_id}")
+            print(
+                f" >> REALIZA: Withdrawal relationship created for Cliente {cliente_id} and Retiro {retiro_id}")
 
             return [result1, result2]
 
@@ -260,7 +269,8 @@ class App:
                 divisa=divisa,
                 fecha=fecha
             )
-            print(f" >> GENERO: Fraud relationship created for Retiro {retiro_id} and Fraude {fraude_id}")
+            print(
+                f" >> GENERO: Fraud relationship created for Retiro {retiro_id} and Fraude {fraude_id}")
 
             result2 = session.run(
                 "MATCH (c:Cuenta {numero_cuenta: $cuenta_numero})"
@@ -272,7 +282,8 @@ class App:
                 motivo=motivo,
                 fecha=fecha
             )
-            print(f" >> INVOLUCRADA_EN: Fraud relationship created for Cuenta {cuenta_numero} and Fraude {fraude_id}")
+            print(
+                f" >> INVOLUCRADA_EN: Fraud relationship created for Cuenta {cuenta_numero} and Fraude {fraude_id}")
 
             return [result1, result2]
 
@@ -297,9 +308,9 @@ class App:
                 monto=monto,
                 fecha=fecha
             )
-            print(f" >> BENEFICIARIO: Beneficiary relationship created for Retiro {retiro_id} and Cliente {cliente_id}")
+            print(
+                f" >> BENEFICIARIO: Beneficiary relationship created for Retiro {retiro_id} and Cliente {cliente_id}")
             return result
-
 
     def find_and_return_node(self, node_label, attribute_name, attribute_value):
         '''
@@ -318,7 +329,7 @@ class App:
             nodes = [record["n"] for record in result]
             print(f' >> Se han encontrado estas coincidencias: {nodes}')
             return nodes
-        
+
     def find_and_return_relationship(self, label1, attr_name1, attr_value1, label2, attr_name2, attr_value2, relationship_type):
         '''
         necesita:
@@ -335,11 +346,12 @@ class App:
             f"(n2:{label2}{{{attr_name2}: $attr_value2}}) RETURN r"
         )
         with self.driver.session(database="neo4j") as session:
-            result = session.run(query, attr_value1=attr_value1, attr_value2=attr_value2)
+            result = session.run(
+                query, attr_value1=attr_value1, attr_value2=attr_value2)
             relationships = [row["r"] for row in result]
             print(f' >> Se han encontrado estas relaciones: {relationships}')
             return relationships
-        
+
     def find_average_transfer_amount(self, account_id):
         '''
         necesita:
@@ -352,9 +364,10 @@ class App:
                 account_id=account_id
             )
             average_amount = result.single()["average_amount"]
-            print(f" >> Transaccion promedio para cuenta {account_id}: {average_amount}")
+            print(
+                f" >> Transaccion promedio para cuenta {account_id}: {average_amount}")
             return average_amount
-    
+
     def find_average_retiro_amount(self, account_id):
         '''
         necesita:
@@ -367,9 +380,10 @@ class App:
                 account_id=account_id
             )
             average_amount = result.single()["average_amount"]
-            print(f" >> Retiro promedio para cliente con DPI {account_id}: {average_amount}")
+            print(
+                f" >> Retiro promedio para cliente con DPI {account_id}: {average_amount}")
             return average_amount
-        
+
     def get_top_accounts_with_fraud_relations(self):
         with self.driver.session(database="neo4j") as session:
             result = session.run(
@@ -392,7 +406,7 @@ class App:
             client_names = [row["nombre"] for row in result]
             print(' >> Devolviendo nombres de clientes owner de cuentas en fraudes')
             return client_names
-        
+
     def count_banks_related_to_fraud(self):
         with self.driver.session(database="neo4j") as session:
             result = session.run(
@@ -402,7 +416,7 @@ class App:
             bank_counts = {row["banco"]: row["count"] for row in result}
             print(' >> Devolviendo nombres de bancos en fraudes')
             return bank_counts
-        
+
     def get_top_5_high_amount_transactions_related_to_fraud(self):
         with self.driver.session(database="neo4j") as session:
             result = session.run(
@@ -411,9 +425,10 @@ class App:
                 "ORDER BY t2.monto DESC"
                 "LIMIT 5"
             )
-            transactions = [(row["numero_transferencia"], row["monto"]) for row in result]
+            transactions = [(row["numero_transferencia"], row["monto"])
+                            for row in result]
             return transactions
-    
+
     def get_top_5_high_amount_withdrawals_related_to_fraud(self):
         with self.driver.session(database="neo4j") as session:
             result = session.run(
@@ -422,17 +437,16 @@ class App:
                 "ORDER BY r2.monto DESC"
                 "LIMIT 5"
             )
-            withdrawals = [(row["numero_retiro"], row["monto"]) for row in result]
+            withdrawals = [(row["numero_retiro"], row["monto"])
+                           for row in result]
             return withdrawals
-
 
     def disable_account(self, account_number):
         with self.driver.session(database="neo4j") as session:
             result = session.run(
                 "MATCH (c:Cuenta {numero_cuenta: $account_number})"
                 "SET c.habilitada = False"
-                "RETURN c"
-                , account_number=account_number
+                "RETURN c", account_number=account_number
             )
             print(f' >> Cuenta {account_number} deshabilitada')
             return result.single()["c"]
@@ -441,17 +455,15 @@ class App:
         with self.driver.session(database="neo4j") as session:
             result = session.run(
                 "MATCH (c:Cuenta {numero_cuenta: $account_number})"
-                "RETURN c.habilitada AS habilitada"
-                , account_number=account_number
+                "RETURN c.habilitada AS habilitada", account_number=account_number
             )
             return result.single()["habilitada"]
-    
+
     def get_account_bank(self, account_number):
         with self.driver.session(database="neo4j") as session:
             result = session.run(
                 "MATCH (c:Cuenta {numero_cuenta: $account_number})"
-                "RETURN c.banco AS banco"
-                , account_number=account_number
+                "RETURN c.banco AS banco", account_number=account_number
             )
             return result.single()["banco"]
 
@@ -459,65 +471,48 @@ class App:
         with self.driver.session(database="neo4j") as session:
             result = session.run(
                 "MATCH (c:Cuenta {numero_cuenta: $account_number})"
-                "DELETE c"
-                , account_number=account_number
+                "DELETE c", account_number=account_number
             )
             return result.summary().counters.nodes_deleted > 0
-        
+
     def update_involucra_motivo(self, account_number, fraud_number, new_motivo):
         with self.driver.session(database="neo4j") as session:
             result = session.run(
                 "MATCH (c:Cuenta {numero_cuenta: $account_number})"
                 "-[r:INVOLUCRA]->(f:Fraude {numero_fraude: $fraud_number})"
-                "SET r.motivo = $new_motivo"
-                , account_number=account_number
-                , fraud_number=fraud_number
-                , new_motivo=new_motivo
+                "SET r.motivo = $new_motivo", account_number=account_number, fraud_number=fraud_number, new_motivo=new_motivo
             )
             return result.summary().counters.relationships_updated > 0
-    
+
     def update_cuenta_banco(self, account_number, new_banco):
         with self.driver.session(database="neo4j") as session:
             result = session.run(
                 "MATCH (c:Cuenta {numero_cuenta: $account_number})"
-                "SET c.banco = $new_banco"
-                , account_number=account_number
-                , new_banco=new_banco
+                "SET c.banco = $new_banco", account_number=account_number, new_banco=new_banco
             )
             return result.summary().counters.nodes_updated > 0
-        
+
     def delete_involucra_relationship(self, account_number, fraud_number):
         with self.driver.session(database="neo4j") as session:
             result = session.run(
                 "MATCH (c:Cuenta {numero_cuenta: $account_number})-[r:INVOLUCRA]->(f:Fraude {numero_fraude: $fraud_number})"
-                "DELETE r"
-                , account_number=account_number
-                , fraud_number=fraud_number
+                "DELETE r", account_number=account_number, fraud_number=fraud_number
             )
             return result.summary().counters.relationships_deleted > 0
-        
+
     def delete_fecha_alerta(self, fraud_number):
         with self.driver.session(database="neo4j") as session:
             result = session.run(
                 "MATCH (f:Fraude {numero_fraude: $fraud_number})"
-                "REMOVE f.fecha_alerta"
-                , fraud_number=fraud_number
+                "REMOVE f.fecha_alerta", fraud_number=fraud_number
             )
             return result.summary().counters.properties_removed > 0
-        
+
     def delete_parentesco_tipo(self, cliente1_id, cliente2_id):
         with self.driver.session(database="neo4j") as session:
             result = session.run(
                 "MATCH (c1:Cliente)-[p:parentesco]-(c2:Cliente) "
                 "WHERE DPI(c1) = $cliente1_id AND DPI(c2) = $cliente2_id "
-                "REMOVE p.tipo"
-                , cliente1_id=cliente1_id, cliente2_id=cliente2_id
+                "REMOVE p.tipo", cliente1_id=cliente1_id, cliente2_id=cliente2_id
             )
             return result.summary().counters.relationships_removed > 0
-
-
-
-
-
-
-
