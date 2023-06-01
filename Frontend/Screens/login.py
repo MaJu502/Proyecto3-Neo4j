@@ -4,17 +4,14 @@ from .components import InputText, Button
 
 
 class Login(UserControl):
-    def __init__(self, page, height, backend):
+    def __init__(self, page, height):
         super().__init__()
         self.page = page
         self.DPI = None
         self.height = height
-        self.backend = backend
-        self.admin = False
 
     def build(self):
         dpiInput = InputText('DPI', False, 280)
-        adminCheckbox = Checkbox()
 
         return Container(
             alignment=alignment.center,
@@ -52,7 +49,7 @@ class Login(UserControl):
                                 ),
                                 Column(alignment='center',
                                        controls=[
-                                           adminCheckbox,
+                                           Checkbox(),
                                            Container(
                                                margin=margin.only(top=-20),
                                                content=(
@@ -65,9 +62,7 @@ class Login(UserControl):
                             alignment=alignment.center,
                             margin=margin.only(top=15),
                             content=ElevatedButton(
-                                on_click=lambda _:self.LogInAction(
-                                    dpiInput.value,
-                                    adminCheckbox.value),
+                                on_click=lambda _:self.page.go('/home'),
                                 content=Text(
                                     'Iniciar Sesión',
                                     size=15,
@@ -94,15 +89,3 @@ class Login(UserControl):
             ], alignment='center', horizontal_alignment='center')
 
         )
-
-    def LogInAction(self, DPI, adminValue):
-        self.admin = adminValue
-        result = self.backend.find_and_return_node('Cliente', 'DPI', DPI)
-        if result:
-            self.page.go('/home')
-        else:
-            self.page.snack_bar = SnackBar(
-                ft.Text(f"Usuario no encontrado"))
-            self.page.snack_bar.open = True
-            self.page.snack_bar.bgcolor = 'red'
-            self.page.update()

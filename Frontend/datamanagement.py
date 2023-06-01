@@ -1,93 +1,51 @@
-import flet as ft
+from flet import *
+import flet
 
 
-def main(page: ft.Page):
-    chart = ft.BarChart(
-        bar_groups=[
-            ft.BarChartGroup(
-                x=0,
-                bar_rods=[
-                    ft.BarChartRod(
-                        from_y=0,
-                        to_y=40,
-                        width=40,
-                        color=ft.colors.AMBER,
-                        tooltip="Apple",
-                        border_radius=0,
-                    ),
-                ],
-            ),
-            ft.BarChartGroup(
-                x=1,
-                bar_rods=[
-                    ft.BarChartRod(
-                        from_y=0,
-                        to_y=100,
-                        width=40,
-                        color=ft.colors.BLUE,
-                        tooltip="Blueberry",
-                        border_radius=0,
-                    ),
-                ],
-            ),
-            ft.BarChartGroup(
-                x=2,
-                bar_rods=[
-                    ft.BarChartRod(
-                        from_y=0,
-                        to_y=30,
-                        width=40,
-                        color=ft.colors.RED,
-                        tooltip="Cherry",
-                        border_radius=0,
-                    ),
-                ],
-            ),
-            ft.BarChartGroup(
-                x=3,
-                bar_rods=[
-                    ft.BarChartRod(
-                        from_y=0,
-                        to_y=60,
-                        width=40,
-                        color=ft.colors.ORANGE,
-                        tooltip="Orange",
-                        border_radius=0,
-                    ),
-                ],
-            ),
-        ],
-        border=ft.border.all(1, ft.colors.GREY_400),
-        left_axis=ft.ChartAxis(
-            labels_size=40, title=ft.Text("Fruit supply"), title_size=40
-        ),
-        bottom_axis=ft.ChartAxis(
-            labels=[
-                ft.ChartAxisLabel(
-                    value=0, label=ft.Container(ft.Text("Apple"), padding=10)
-                ),
-                ft.ChartAxisLabel(
-                    value=1, label=ft.Container(ft.Text("Blueberry"), padding=10)
-                ),
-                ft.ChartAxisLabel(
-                    value=2, label=ft.Container(ft.Text("Cherry"), padding=10)
-                ),
-                ft.ChartAxisLabel(
-                    value=3, label=ft.Container(ft.Text("Orange"), padding=10)
-                ),
-            ],
-            labels_size=40,
-        ),
-        horizontal_grid_lines=ft.ChartGridLines(
-            color=ft.colors.GREY_300, width=1, dash_pattern=[3, 3]
-        ),
-        tooltip_bgcolor=ft.colors.with_opacity(0.5, ft.colors.GREY_300),
-        max_y=110,
-        interactive=True,
-        expand=True,
+def main(page: Page):
+    page.update()
+
+    def changetab(e):
+        # GET INDEX TAB
+        my_index = e.control.selected_index
+        tab_1.visible = True if my_index == 0 else False
+        tab_2.visible = True if my_index == 1 else False
+        tab_3.visible = True if my_index == 2 else False
+        page.update()
+
+    page.appbar = NavigationBar(
+        bgcolor="blue",
+        on_change=changetab,
+        selected_index=0,
+        destinations=[
+            NavigationDestination(icon="home"),
+            NavigationDestination(icon="explore"),
+            NavigationDestination(icon="settings"),
+        ]
     )
 
-    page.add(chart)
+    tab_1 = Text("Tab 1", size=30, visible=True)
+    tab_2 = Text("Tab 2", size=30, visible=False)
+    tab_3 = Text("Tab 3", size=30, visible=False)
+
+    page.add(
+        Container(
+            margin=margin.only(
+                bottom=page.window_height/2,
+                left=50
+
+            ),
+            content=Column([
+                tab_1,
+                tab_2,
+                tab_3
 
 
-ft.app(main)
+            ])
+
+        )
+
+    )
+
+
+flet.app(target=main)
