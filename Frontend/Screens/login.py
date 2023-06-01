@@ -11,7 +11,7 @@ class Login(UserControl):
         self.height = height
 
     def build(self):
-        dpiInput = InputText('DPI', False, 280),
+        dpiInput = InputText('DPI', False, 280)
 
         return Container(
             alignment=alignment.center,

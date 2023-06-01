@@ -36,7 +36,6 @@ class SignUp(UserControl):
                     height=500,
                     border_radius=border_radius.all(10),
                     bgcolor='#1D242D',
-
                     content=Column([
                         Container(
                             margin=margin.only(bottom=20),

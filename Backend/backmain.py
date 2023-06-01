@@ -8,7 +8,7 @@ from datetime import datetime
 from neo4j.exceptions import ServiceUnavailable
 
 
-class App:
+class BackendConn:
     def __init__(self, uri, user, password) -> None:
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
 
