@@ -1,6 +1,21 @@
 from flet import Text, alignment, margin, Container, TextField, TextStyle, ElevatedButton
+from cerberus import Validator
 
+# Validation function using Cerberus
+def validate_input(data):
+    schema = {'text': {'type': 'string', 'minlength': 1, 'maxlength': 100},
+              'hide': {'type': 'boolean'},
+              'width_par': {'type': 'integer', 'min': 1, 'max': 1000}}
+    v = Validator(schema)
+    if not v.validate(data):
+        raise ValueError(f"Invalid input: {v.errors}")
+
+# Modified input_text function with validation
 def input_text(text: str, hide: bool, width_par: int):
+    # Validate the input parameters
+    validate_input({'text': text, 'hide': hide, 'width_par': width_par})
+
+    # Proceed to create the TextField if validation passes
     return TextField(
         label=text,
         label_style=TextStyle(color='#666C75'),
@@ -32,3 +47,4 @@ def button(text: str):
             bgcolor='blue'
         )
     )
+
