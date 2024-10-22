@@ -1,6 +1,6 @@
-from flet import *
+from flet import UserControl,  alignment, margin, Container, TextField, ElevatedButton, Dropdown, TextStyle, Column, Row, padding, Image, border_radius, Text
 import flet as ft
-from .components import InputText, Button
+from .components import input_text
 from datetime import datetime
 
 
@@ -13,10 +13,10 @@ class Retiro(UserControl):
         self.height = height
 
     def build(self):
-        montoInput = InputText(
+        monto_input = input_text(
             'Monto', False, 155)
 
-        divisaInput = Dropdown(
+        divisa_input = Dropdown(
             width=155,
             height=48,
             color='grey',
@@ -36,7 +36,7 @@ class Retiro(UserControl):
                     "Dolares"),
             ],
         )
-        cuentaOInput = TextField(
+        cuenta_o_input = TextField(
             label='No. Cuenta',
             label_style=TextStyle(
                 color='#666C75'),
@@ -47,7 +47,7 @@ class Retiro(UserControl):
             filled=True,
             border_color='#666C75',
         )
-        dpiInput = TextField(
+        dpi_input = TextField(
             label='DPI',
             label_style=TextStyle(
                 color='#666C75'),
@@ -58,7 +58,7 @@ class Retiro(UserControl):
             filled=True,
             border_color='#666C75',
         )
-        descInput = TextField(
+        desc_input = TextField(
             label='Descripcion',
             label_style=TextStyle(
                 color='#666C75'),
@@ -117,31 +117,31 @@ class Retiro(UserControl):
                                                Row([
                                                    Container(
                                                        alignment=alignment.center,
-                                                       content=montoInput
+                                                       content=monto_input
                                                    ),
                                                    Container(
                                                        alignment=alignment.center,
-                                                       content=divisaInput
+                                                       content=divisa_input
                                                    ),
                                                ], alignment='center'),
                                                Container(
                                                    alignment=alignment.center,
-                                                   content=cuentaOInput
+                                                   content=cuenta_o_input
                                                ),
                                                Container(
                                                    alignment=alignment.center,
-                                                   content=dpiInput
+                                                   content=dpi_input
                                                ),
                                                Container(
                                                    alignment=alignment.center,
-                                                   content=descInput
+                                                   content=desc_input
                                                ),
                                                Container(
                                                    alignment=alignment.center,
                                                    margin=margin.only(top=15),
                                                    content=ElevatedButton(
                                                        on_click=lambda _:self.CrearRetiro(
-                                                           montoInput.value, divisaInput.value, cuentaOInput.value, dpiInput.value, descInput.value),
+                                                           monto_input.value, divisa_input.value, cuenta_o_input.value, dpi_input.value, desc_input.value),
                                                        content=Text(
                                                            'Transferir',
                                                            size=15,
@@ -162,78 +162,79 @@ class Retiro(UserControl):
                                )])
         )
 
-    def CrearRetiro(self, monto, divisa, cuentaOrigen, dpi, descripcion):
-        promedio = self.backend.find_average_retiro_amount(cuentaOrigen)
-        destinoHabilitada = self.backend.is_account_enabled(cuentaOrigen)
-        dpi_owner = self.backend.get_cliente_dpi(cuentaOrigen)
+    def CrearRetiro(self, monto, divisa, cuenta_origen, dpi, descripcion):
+        promedio = self.backend.find_average_retiro_amount(cuenta_origen)
+        destino_habilitada = self.backend.is_account_enabled(cuenta_origen)
+        dpi_owner = self.backend.get_cliente_dpi(cuenta_origen)
 
-        if destinoHabilitada:
-            numero_para_retiro = self.backend.get_max_withdrawal_number()
-            if numero_para_retiro == None:
-                numero_para_retiro = 1
-            else:
-                numero_para_retiro += 1
-
-            self.backend.create_node(['Retiro'], {
-                'monto': int(monto),
-                'fecha': datetime.now(),
-                'divisa': divisa,
-                'descripcion': descripcion,
-                'estado': True,
-                'numero_retiro': numero_para_retiro
-            })
-
-            aplica_promedio = False
-            if promedio != None:
-                aplica_promedio = True
-                promedio = promedio * 1.5
-            else:
-                promedio = 0
-
-            # verificar condiciones de fraude
-            hacerFraude = False
-            tipo_fraude = 'Ninguno'
-            if int(monto) > 100000:
-                hacerFraude = True
-                tipo_fraude = 'Monto elevado'
-            if int(monto) > promedio and aplica_promedio:
-                hacerFraude = True
-                tipo_fraude = 'Monto fuera de promedio'
-            if self.backend.has_relationship_with_fraud(cuentaOrigen):
-                hacerFraude = True
-                tipo_fraude = 'Cuenta anormal ligada a fraude'
-
-            # hacer la transferencia
-            if dpi == dpi_owner:
-                self.backend.create_withdrawal_relationship(
-                    numero_para_retiro, cuentaOrigen, dpi, monto, divisa, datetime.now(), True)
-            else:
-                self.backend.create_withdrawal_relationship(
-                    numero_para_retiro, cuentaOrigen, dpi, monto, divisa, datetime.now(), False)
-
-        else:
+        if not destino_habilitada:
             print(' >> Cuenta no habilitada ERROR')
+            return
 
-        if hacerFraude:
-            num_para_fraude = self.backend.get_max_fraud_number()
+        numero_para_retiro = self.obtener_numero_para_retiro()
 
-            if num_para_fraude == None:
-                num_para_fraude = 1
-            else:
-                num_para_fraude += 1
+        self.crear_retiro(cuenta_origen, monto, divisa, descripcion, numero_para_retiro)
 
-            self.backend.create_node(['Fraude'], {
-                'tipo': 'Retiro',
-                'motivo': tipo_fraude,
-                'estado': False,
-                'fecha_alerta': datetime.now(),
-                'accion_tomada': 'Ninguna',
-                'numero_fraude': num_para_fraude
-            })
-            self.backend.create_fraud_relationship_retiro(
-                numero_para_retiro, num_para_fraude, cuentaOrigen, monto, divisa, datetime.now(), tipo_fraude)
+        hacer_fraude, tipo_fraude = self.verificar_fraude(cuenta_origen, monto, promedio)
 
-            # deshabilitar cuenta
-            self.backend.disable_account(cuentaOrigen)
+        self.realizar_retiro(dpi, dpi_owner, numero_para_retiro, cuenta_origen, monto, divisa)
 
-        pass
+        if hacer_fraude:
+            self.reportar_fraude(cuenta_origen, numero_para_retiro, monto, divisa, tipo_fraude)
+
+
+    def obtener_numero_para_retiro(self):
+        numero_para_retiro = self.backend.get_max_withdrawal_number()
+        return 1 if numero_para_retiro is None else numero_para_retiro + 1
+
+
+    def crear_retiro(self, cuenta_origen, monto, divisa, descripcion, numero_para_retiro):
+        self.backend.create_node(['Retiro'], {
+            'monto': int(monto),
+            'fecha': datetime.now(),
+            'divisa': divisa,
+            'descripcion': descripcion,
+            'estado': True,
+            'numero_retiro': numero_para_retiro
+        })
+
+
+    def verificar_fraude(self, cuenta_origen, monto, promedio):
+        hacer_fraude = False
+        tipo_fraude = 'Ninguno'
+        if int(monto) > 100000:
+            hacer_fraude = True
+            tipo_fraude = 'Monto elevado'
+        if int(monto) > promedio:
+            hacer_fraude = True
+            tipo_fraude = 'Monto fuera de promedio'
+        if self.backend.has_relationship_with_fraud(cuenta_origen):
+            hacer_fraude = True
+            tipo_fraude = 'Cuenta anormal ligada a fraude'
+        return hacer_fraude, tipo_fraude
+
+
+    def realizar_retiro(self, dpi, dpi_owner, numero_para_retiro, cuenta_origen, monto, divisa):
+        if dpi == dpi_owner:
+            self.backend.create_withdrawal_relationship(
+                numero_para_retiro, cuenta_origen, dpi, monto, divisa, datetime.now(), True)
+        else:
+            self.backend.create_withdrawal_relationship(
+                numero_para_retiro, cuenta_origen, dpi, monto, divisa, datetime.now(), False)
+
+
+    def reportar_fraude(self, cuenta_origen, numero_para_retiro, monto, divisa, tipo_fraude):
+        num_para_fraude = self.backend.get_max_fraud_number()
+        num_para_fraude = 1 if num_para_fraude is None else num_para_fraude + 1
+
+        self.backend.create_node(['Fraude'], {
+            'tipo': 'Retiro',
+            'motivo': tipo_fraude,
+            'estado': False,
+            'fecha_alerta': datetime.now(),
+            'accion_tomada': 'Ninguna',
+            'numero_fraude': num_para_fraude
+        })
+        self.backend.create_fraud_relationship_retiro(
+            numero_para_retiro, num_para_fraude, cuenta_origen, monto, divisa, datetime.now(), tipo_fraude)
+        self.backend.disable_account(cuenta_origen)

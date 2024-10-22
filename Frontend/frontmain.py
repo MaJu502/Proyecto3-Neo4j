@@ -1,71 +1,41 @@
 import flet as ft
-from flet import *
+from flet import  Page, View
 from urllib.parse import urlparse
-from Screens.homepage import create_homepage
-from Screens.login import Login
-from Screens.signup import SignUp
+from Frontend.Screens.homepage import create_homepage
+from Frontend.Screens.login import Login
+from Frontend.Screens.signup import SignUp
 
 
 def main(page: Page):
     page.title = "routing app"
-    youparams = "watermelon"
     page.bgcolor = 'red'
     height = page.height
     login = Login(page, height)
     signup = SignUp(page, height)
 
-    def route_change(route):
-        # CLEAR ALL PAGE
+    # Function to create and add a view
+    def add_view(route, control):
         page.views.clear()
         page.views.append(
             View(
-                route="/",
+                route=route,
                 padding=0,
                 spacing=0,
-                controls=[
-                    login
-                ],
+                controls=[control],
             )
         )
+
+    def route_change(route):
         if page.route == f"/":
-            page.views.clear()
-            page.views.append(
-                View(
-                    route="/",
-                    padding=0,
-                    spacing=0,
-                    controls=[
-                        login
-                    ],
-                )
-            )
+            add_view("/", login)
 
         elif page.route == f"/signup":
-            page.views.clear()
-            page.views.append(
-                View(
-                    route="/signup",
-                    padding=0,
-                    spacing=0,
-                    controls=[
-                        signup
-                    ],
-                )
-            )
+            add_view("/signup", signup)
 
         elif page.route == f"/home":
-            page.views.clear()
-            page.views.append(
-                View(
-                    route="/home",
-                    padding=0,
-                    spacing=0,
-                    controls=[
-                        create_homepage(page, False)
-                    ],
-                )
-            )
-    page.update()
+            add_view("/home", create_homepage(page, False))
+
+        page.update()
 
     def view_pop():
         page.views.pop()
@@ -75,6 +45,5 @@ def main(page: Page):
     page.on_route_change = route_change
     page.on_view_pop = view_pop
     page.go(page.route)
-
 
 ft.app(target=main, view=ft.WEB_BROWSER)

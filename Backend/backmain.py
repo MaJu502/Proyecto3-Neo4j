@@ -7,6 +7,10 @@ import logging
 from datetime import datetime
 from neo4j.exceptions import ServiceUnavailable
 
+# Constantes
+ACTUALIZADO_MSG = ' >> Actualizado!'
+ARROW_MSG = ' --> '
+
 
 class BackendConn:
     def __init__(self, uri, user, password) -> None:
@@ -437,7 +441,7 @@ class BackendConn:
                 fraud_number=fraud_number,
                 new_motivo=new_motivo
             )
-            print(' >> Actualizado!')
+            print(ACTUALIZADO_MSG)
             return result
 
     def update_cuenta_banco(self, account_number, new_banco):
@@ -446,7 +450,7 @@ class BackendConn:
                 "MATCH (c:Cuenta {numero_cuenta: $account_number}) "
                 "SET c.banco = $new_banco", account_number=account_number, new_banco=new_banco
             )
-            print(' >> Actualizado !')
+            print(ACTUALIZADO_MSG)
             return result
 
     def delete_involucra_relationship(self, account_number, fraud_number):
@@ -455,7 +459,7 @@ class BackendConn:
                 "MATCH (c:Cuenta {numero_cuenta: $account_number})-[r:INVOLUCRADA_EN]->(f:Fraude {numero_fraude: $fraud_number}) "
                 "DELETE r", account_number=account_number, fraud_number=fraud_number
             )
-            print(' >> Actualizado!')
+            print(ACTUALIZADO_MSG)
             return result
 
     def delete_fecha_alerta(self, fraud_number):
@@ -464,7 +468,7 @@ class BackendConn:
                 "MATCH (f:Fraude {numero_fraude: $fraud_number}) "
                 "REMOVE f.fecha_alerta", fraud_number=fraud_number
             )
-            print(' >> Actualizado!')
+            print(ACTUALIZADO_MSG)
             return result
 
     def modificar_estado_accion_fraude(self, numero_fraude, nuevo_estado, nueva_accion):
@@ -491,7 +495,7 @@ class BackendConn:
                 "MATCH (c1:Cliente {DPI: $cliente2_id})-[r:PARENTESCO]->(c2:Cliente {DPI: $cliente1_id}) "
                 "DELETE r", cliente1_id=cliente1_id, cliente2_id=cliente2_id
             )
-            print(' >> Actualizado parentesco borrado!')
+            print(ACTUALIZADO_MSG)
             return [result1, result2]
 
     def has_relationship_with_fraud(self, account_number):
@@ -591,7 +595,7 @@ class BackendConn:
             accounts = [(row["numero_cuenta"], row["fraud_count"])
                         for row in result]
             print(' >> Devolviendo nodos cuenta top 5 en fraudes')
-            print(' --> ', accounts)
+            print(ARROW_MSG, accounts)
             return accounts
 
     def get_client_names_related_to_fraud(self):
@@ -603,7 +607,7 @@ class BackendConn:
             client_names = [(row["nombre"], row["DPI"]) for row in result]
             client_names = list(set(client_names))
             print(' >> Devolviendo nombres de clientes owner de cuentas en fraudes')
-            print(' --> ', client_names)  # blanco ?
+            print(ARROW_MSG, client_names)  # blanco ?
 
             return client_names
 
@@ -615,7 +619,7 @@ class BackendConn:
             )
             bank_counts = {row["banco"]: row["count"] for row in result}
             print(' >> Devolviendo nombres de bancos en fraudes')
-            print(' --> ', bank_counts)
+            print(ARROW_MSG, bank_counts)
             return bank_counts
 
     def get_top_5_high_amount_transactions_related_to_fraud(self):
@@ -629,7 +633,7 @@ class BackendConn:
             transactions = [(row["numero_transferencia"], row["monto"])
                             for row in result]
             print(' >> Devolviendo top 5 montos mas altos transfer')
-            print(' --> ', transactions)
+            print(ARROW_MSG, transactions)
             return transactions
 
     def get_top_5_high_amount_withdrawals_related_to_fraud(self):
@@ -643,5 +647,5 @@ class BackendConn:
             withdrawals = [(row["numero_retiro"], row["monto"])
                            for row in result]
             print(' >> Devolviendo 5 high amount retiro')
-            print(' --> ', withdrawals)  # no sirve
+            print(ARROW_MSG, withdrawals)  # no sirve
             return withdrawals

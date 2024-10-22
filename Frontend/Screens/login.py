@@ -1,20 +1,20 @@
-from flet import *
+from flet import UserControl,  Container, Column, Row, Text, Checkbox, Image, SnackBar, ElevatedButton, padding, border_radius, alignment, margin
 import flet as ft
-from .components import InputText, Button
+from .components import input_text
 
 
 class Login(UserControl):
     def __init__(self, page, height, backend):
         super().__init__()
         self.page = page
-        self.DPI = None
+        self.dpi = None
         self.height = height
         self.backend = backend
         self.admin = False
 
     def build(self):
-        dpiInput = InputText('DPI', False, 280)
-        adminCheckbox = Checkbox()
+        dpi_input = input_text('dpi', False, 280)
+        admin_checkbox = Checkbox()
 
         return Container(
             alignment=alignment.center,
@@ -48,11 +48,11 @@ class Login(UserControl):
                             controls=[
                                 Container(
                                     alignment=alignment.center,
-                                    content=dpiInput
+                                    content=dpi_input
                                 ),
                                 Column(alignment='center',
                                        controls=[
-                                           adminCheckbox,
+                                           admin_checkbox,
                                            Container(
                                                margin=margin.only(top=-20),
                                                content=(
@@ -66,8 +66,8 @@ class Login(UserControl):
                             margin=margin.only(top=15),
                             content=ElevatedButton(
                                 on_click=lambda _:self.LogInAction(
-                                    dpiInput.value,
-                                    adminCheckbox.value),
+                                    dpi_input.value,
+                                    admin_checkbox.value),
                                 content=Text(
                                     'Iniciar Sesión',
                                     size=15,
@@ -95,11 +95,11 @@ class Login(UserControl):
 
         )
 
-    def LogInAction(self, DPI, adminValue):
-        self.admin = adminValue
-        result = self.backend.find_and_return_node('Cliente', 'DPI', DPI)
+    def LogInAction(self, dpi, admin_value):
+        self.admin = admin_value
+        result = self.backend.find_and_return_node('Cliente', 'dpi', dpi)
         if result:
-            self.DPI = DPI
+            self.dpi = dpi
             self.page.go('/home')
         else:
             self.page.snack_bar = SnackBar(

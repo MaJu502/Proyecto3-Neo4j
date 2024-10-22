@@ -1,7 +1,7 @@
 from random import choice
-from flet import *
-import flet as ft
-from flet import animation, alignment, border, transform, padding
+from flet import UserControl,  Container, Column, Text, ElevatedButton, margin
+from flet.navigation import NavigationDestination, NavigationBar
+from flet.controls import UserControl
 
 from .transferencia import Transferencia
 from .retiro import Retiro
@@ -10,11 +10,12 @@ from .agregarCuenta import AddCuenta
 from .visualizacionNodos import VisualizacionNodos
 
 
+
 class create_homepage(UserControl):
-    def __init__(self, page, backend, Admin=False):
+    def __init__(self, page, backend, admin=False):
         super().__init__()
         self.page = page
-        self.Admin = Admin
+        self.admin = admin
         self.backend = backend
 
     def build(self):
@@ -36,16 +37,16 @@ class create_homepage(UserControl):
             switch_control.update()
             self.page.update()
 
-        Destinations = None
-        if self.Admin == False:
-            Destinations = [
+        destinations = None
+        if self.admin == False:
+            destinations = [
                 NavigationDestination(
                     icon="send_to_mobile", label='Transferencias'),
                 NavigationDestination(icon="request_quote", label='Retiro'),
                 NavigationDestination(icon="add", label='Crear cuenta'),
             ]
         else:
-            Destinations = [
+            destinations = [
                 NavigationDestination(
                     icon="send_to_mobile", label='Transferencias'),
                 NavigationDestination(icon="request_quote", label='Retiro'),
@@ -55,11 +56,11 @@ class create_homepage(UserControl):
                     icon="supervisor_account", label='Cuentas'),
             ]
 
-        barMenu = NavigationBar(
+        bar_menu = NavigationBar(
             bgcolor="blue",
             on_change=changetab,
             selected_index=0,
-            destinations=Destinations
+            destinations=destinations
         )
 
         page1 = Transferencia(self.page, self.page.height, self.backend)
@@ -87,7 +88,7 @@ class create_homepage(UserControl):
                 spacing=0,
                 controls=[
                     Container(
-                        content=barMenu
+                        content=bar_menu
                     ),
 
                     Container(

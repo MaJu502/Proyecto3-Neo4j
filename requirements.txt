@@ -1,0 +1,4 @@
+flet==0.24.1
+neo4j==5.25.0
+pytest==8.3.3
+python-dotenv==1.0.1

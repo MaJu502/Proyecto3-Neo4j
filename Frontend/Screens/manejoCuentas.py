@@ -1,7 +1,9 @@
-from flet import *
+from flet import UserControl,  Text, ElevatedButton, SnackBar, Container, Row, Column, ScrollMode, TextField, Dropdown, Image, padding, margin, border_radius, alignment, TextStyle
 import flet as ft
-from .components import InputText, Button
+from .components import input_text
 
+# Constantes
+NO_CUENTA_LABEL = 'No. Cuenta'
 
 class ManejoCuentas(UserControl):
     def __init__(self, page, height, backend):
@@ -12,12 +14,10 @@ class ManejoCuentas(UserControl):
         self.backend = backend
 
     def build(self):
-        dpiInput = InputText('DPI', False, 280)
-
         # M1 - Actualizacion de motivo
 
-        M1NoCuenta = TextField(
-            label='No. Cuenta',
+        m1_no_cuenta = TextField(
+            label=NO_CUENTA_LABEL,
             label_style=TextStyle(
                 color='#666C75'),
             color='white',
@@ -27,7 +27,7 @@ class ManejoCuentas(UserControl):
             filled=True,
             border_color='#666C75',
         )
-        M1NoFraude = TextField(
+        m1_no_fraude = TextField(
             label='No. Fraude',
             label_style=TextStyle(
                 color='#666C75'),
@@ -38,7 +38,7 @@ class ManejoCuentas(UserControl):
             filled=True,
             border_color='#666C75',
         )
-        M1NewMotivo = TextField(
+        m1_new_motivo = TextField(
             label='Nuevo motivo',
             label_style=TextStyle(
                 color='#666C75'),
@@ -53,8 +53,8 @@ class ManejoCuentas(UserControl):
         )
 
         # -------------------------
-        M2NoCuenta = TextField(
-            label='No. Cuenta',
+        m2_no_cuenta = TextField(
+            label=NO_CUENTA_LABEL,
             label_style=TextStyle(
                 color='#666C75'),
             color='white',
@@ -65,7 +65,7 @@ class ManejoCuentas(UserControl):
             border_color='#666C75',
         )
 
-        M2BancoNuevo = Dropdown(
+        m2_banco_nuevo = Dropdown(
             width=320,
             height=48,
             color='grey',
@@ -97,8 +97,8 @@ class ManejoCuentas(UserControl):
         )
 
         # ---------------------------------
-        M3NoCuenta = TextField(
-            label='No. Cuenta',
+        m3_no_cuenta = TextField(
+            label=NO_CUENTA_LABEL,
             label_style=TextStyle(
                 color='#666C75'),
             color='white',
@@ -108,7 +108,7 @@ class ManejoCuentas(UserControl):
             filled=True,
             border_color='#666C75',
         )
-        M3NoFraude = TextField(
+        m3_no_fraude = TextField(
             label='No. Fraude',
             label_style=TextStyle(
                 color='#666C75'),
@@ -121,7 +121,7 @@ class ManejoCuentas(UserControl):
         )
 
         # -------------------------------
-        M4DPI1 = TextField(
+        m4dpi_1 = TextField(
             label='DPI - Persona 1',
             label_style=TextStyle(
                 color='#666C75'),
@@ -132,7 +132,7 @@ class ManejoCuentas(UserControl):
             filled=True,
             border_color='#666C75',
         )
-        M4DPI2 = TextField(
+        m4dpi_2 = TextField(
             label='DPI - Persona 2',
             label_style=TextStyle(
                 color='#666C75'),
@@ -145,8 +145,8 @@ class ManejoCuentas(UserControl):
         )
 
         # --------------------
-        M5NoCuenta = TextField(
-            label='No. Cuenta',
+        m5_no_cuenta = TextField(
+            label=NO_CUENTA_LABEL,
             label_style=TextStyle(
                 color='#666C75'),
             color='white',
@@ -159,7 +159,7 @@ class ManejoCuentas(UserControl):
 
         # ----------------------------
 
-        M6DPI1 = TextField(
+        m6dpi_1 = TextField(
             label='DPI - Persona 1',
             label_style=TextStyle(
                 color='#666C75'),
@@ -170,7 +170,7 @@ class ManejoCuentas(UserControl):
             filled=True,
             border_color='#666C75',
         )
-        M6DPI2 = TextField(
+        m6dpi_2 = TextField(
             label='DPI - Persona 2',
             label_style=TextStyle(
                 color='#666C75'),
@@ -181,7 +181,7 @@ class ManejoCuentas(UserControl):
             filled=True,
             border_color='#666C75',
         )
-        M6Tipo = Dropdown(
+        m6_tipo = Dropdown(
             width=155,
             height=48,
             color='grey',
@@ -212,7 +212,7 @@ class ManejoCuentas(UserControl):
             ],
         )
 
-        M6Grado = Dropdown(
+        m6_grado = Dropdown(
             width=155,
             height=48,
             color='grey',
@@ -236,8 +236,8 @@ class ManejoCuentas(UserControl):
         )
         # ----------------------------
 
-        DeleteCuentaInput = TextField(
-            label='No. Cuenta',
+        delete_cuenta_input = TextField(
+            label=NO_CUENTA_LABEL,
             label_style=TextStyle(
                 color='#666C75'),
             color='white',
@@ -268,14 +268,14 @@ class ManejoCuentas(UserControl):
                             Container(
                                 margin=margin.only(
                                     right=60, top=30, bottom=30),
-                                content=DeleteCuentaInput
+                                content=delete_cuenta_input
                             ),
                             Container(
                                 margin=margin.only(
                                     right=60, top=30, bottom=30),
                                 content=ElevatedButton(
                                     on_click=lambda _:self.BorrarCuenta(
-                                        DeleteCuentaInput.value),
+                                        delete_cuenta_input.value),
                                     content=Text(
                                         'Eliminar cuenta',
                                         size=15,
@@ -312,15 +312,15 @@ class ManejoCuentas(UserControl):
                                                        weight='bold',
                                                    ),
                                                ),
-                                               M1NoCuenta,
-                                               M1NoFraude,
-                                               M1NewMotivo,
+                                               m1_no_cuenta,
+                                               m1_no_fraude,
+                                               m1_new_motivo,
                                                Container(
                                                    alignment=alignment.center,
                                                    margin=margin.only(top=15),
                                                    content=ElevatedButton(
                                                        on_click=lambda _:self.ActualizarMotivo(
-                                                           M1NoCuenta.value, M1NoFraude.value, M1NewMotivo.value),
+                                                           m1_no_cuenta.value, m1_no_fraude.value, m1_new_motivo.value),
                                                        content=Text(
                                                            'Actualizar',
                                                            size=15,
@@ -354,14 +354,14 @@ class ManejoCuentas(UserControl):
                                                        weight='bold',
                                                    ),
                                                ),
-                                               M2NoCuenta,
-                                               M2BancoNuevo,
+                                               m2_no_cuenta,
+                                               m2_banco_nuevo,
                                                Container(
                                                    alignment=alignment.center,
                                                    margin=margin.only(top=15),
                                                    content=ElevatedButton(
                                                        on_click=lambda _:self.ActualizarBanco(
-                                                           M2NoCuenta.value, M2BancoNuevo.value),
+                                                           m2_no_cuenta.value, m2_banco_nuevo.value),
                                                        content=Text(
                                                            'Actualizar',
                                                            size=15,
@@ -397,14 +397,14 @@ class ManejoCuentas(UserControl):
                                                        weight='bold',
                                                    ),
                                                ),
-                                               M3NoCuenta,
-                                               M3NoFraude,
+                                               m3_no_cuenta,
+                                               m3_no_fraude,
                                                Container(
                                                    alignment=alignment.center,
                                                    margin=margin.only(top=15),
                                                    content=ElevatedButton(
                                                        on_click=lambda _:self.SolucionarFraude(
-                                                           M3NoCuenta.value, M3NoFraude.value),
+                                                           m3_no_cuenta.value, m3_no_fraude.value),
                                                        content=Text(
                                                            'Solucionar',
                                                            size=15,
@@ -438,14 +438,14 @@ class ManejoCuentas(UserControl):
                                                        weight='bold',
                                                    ),
                                                ),
-                                               M4DPI1,
-                                               M4DPI2,
+                                               m4dpi_1,
+                                               m4dpi_2,
                                                Container(
                                                    alignment=alignment.center,
                                                    margin=margin.only(top=15),
                                                    content=ElevatedButton(
                                                        on_click=lambda _:self.BorrarParentezco(
-                                                           M4DPI1.value, M4DPI2.value),
+                                                           m4dpi_1.value, m4dpi_2.value),
                                                        content=Text(
                                                            'Eliminar',
                                                            size=15,
@@ -481,13 +481,13 @@ class ManejoCuentas(UserControl):
                                                        weight='bold',
                                                    ),
                                                ),
-                                               M5NoCuenta,
+                                               m5_no_cuenta,
                                                Container(
                                                    alignment=alignment.center,
                                                    margin=margin.only(top=15),
                                                    content=ElevatedButton(
                                                        on_click=lambda _:self.ActivarCuentas(
-                                                           M5NoCuenta.value),
+                                                           m5_no_cuenta.value),
                                                        content=Text(
                                                            'Habilitar',
                                                            size=15,
@@ -524,21 +524,21 @@ class ManejoCuentas(UserControl):
                                                Row([
                                                    Container(
                                                        alignment=alignment.center,
-                                                       content=M6Tipo
+                                                       content=m6_tipo
                                                    ),
                                                    Container(
                                                        alignment=alignment.center,
-                                                       content=M6Grado
+                                                       content=m6_grado
                                                    ),
                                                ], alignment='center'),
-                                               M6DPI1,
-                                               M6DPI2,
+                                               m6dpi_1,
+                                               m6dpi_2,
                                                Container(
                                                    alignment=alignment.center,
                                                    margin=margin.only(top=15),
                                                    content=ElevatedButton(
                                                        on_click=lambda _:self.CrearParentezco(
-                                                           M6DPI1.value, M6DPI2.value, M6Tipo.value, M6Grado.value),
+                                                           m6dpi_1.value, m6dpi_2.value, m6_tipo.value, m6_grado.value),
                                                        content=Text(
                                                            'Crear',
                                                            size=15,
@@ -580,9 +580,9 @@ class ManejoCuentas(UserControl):
             print(e)
             self.page.update()
 
-    def BorrarCuenta(self, NoCuenta):
+    def BorrarCuenta(self, no_cuenta):
         try:
-            self.backend.delete_account(NoCuenta)
+            self.backend.delete_account(no_cuenta)
             self.page.snack_bar = SnackBar(
                 ft.Text(f"Se ha eliminado la cuenta"))
             self.page.snack_bar.open = True
@@ -596,10 +596,10 @@ class ManejoCuentas(UserControl):
             print(e)
             self.page.update()
 
-    def ActualizarMotivo(self, NoCuenta, NoFraude, motivoNuevo):
+    def ActualizarMotivo(self, no_cuenta, no_fraude, motivo_nuevo):
         try:
             self.backend.update_involucra_motivo(
-                NoCuenta, int(NoFraude), motivoNuevo)
+                no_cuenta, int(no_fraude), motivo_nuevo)
             self.page.snack_bar = SnackBar(
                 ft.Text(f"Se ha actualizado el motivo del fraude"))
             self.page.snack_bar.open = True
@@ -610,13 +610,14 @@ class ManejoCuentas(UserControl):
                 ft.Text(f"No se ha podido actualizar el motivo del fraude"))
             self.page.snack_bar.open = True
             self.page.snack_bar.bgcolor = 'green'
+            print(e)
             self.page.update()
 
-    def ActualizarBanco(self, NoCuenta, BancoNuevo):
+    def ActualizarBanco(self, no_cuenta, banco_nuevo):
         try:
-            self.backend.update_cuenta_banco(NoCuenta, BancoNuevo)
+            self.backend.update_cuenta_banco(no_cuenta, banco_nuevo)
             self.page.snack_bar = SnackBar(
-                ft.Text(f"Se ha actualizado el banco de la cuenta {NoCuenta}"))
+                ft.Text(f"Se ha actualizado el banco de la cuenta {no_cuenta}"))
             self.page.snack_bar.open = True
             self.page.snack_bar.bgcolor = 'green'
             self.page.update()
@@ -628,53 +629,55 @@ class ManejoCuentas(UserControl):
             self.page.update()
             print(e)
 
-    def SolucionarFraude(self, NoCuenta, NoFraude):
+    def SolucionarFraude(self, no_cuenta, no_fraude):
         try:
-            self.backend.delete_involucra_relationship(NoCuenta, int(NoFraude))
-            self.backend.delete_fecha_alerta(int(NoFraude))
+            self.backend.delete_involucra_relationship(no_cuenta, int(no_fraude))
+            self.backend.delete_fecha_alerta(int(no_fraude))
             self.backend.modificar_estado_accion_fraude(
-                int(NoFraude), True, 'Resuelto')
+                int(no_fraude), True, 'Resuelto')
             self.page.snack_bar = SnackBar(
-                ft.Text(f"Se ha solucionado el fraude {NoFraude}"))
+                ft.Text(f"Se ha solucionado el fraude {no_fraude}"))
             self.page.snack_bar.open = True
             self.page.snack_bar.bgcolor = 'green'
             self.page.update()
         except Exception as e:
             self.page.snack_bar = SnackBar(
-                ft.Text(f"No se ha podido solucionar el fraude {NoFraude}"))
+                ft.Text(f"No se ha podido solucionar el fraude {no_fraude}"))
             self.page.snack_bar.open = True
             self.page.snack_bar.bgcolor = 'red'
             self.page.update()
             print(e)
 
-    def BorrarParentezco(self, DPI1, DPI2):
+    def BorrarParentezco(self, dpi_1, dpi_2):
         try:
-            self.backend.delete_parentesco_tipo(DPI1, DPI2)
+            self.backend.delete_parentesco_tipo(dpi_1, dpi_2)
             self.page.snack_bar = SnackBar(
-                ft.Text(f"Se ha borrado el parentezco entre {DPI1} y {DPI2} exitosamente"))
+                ft.Text(f"Se ha borrado el parentezco entre {dpi_1} y {dpi_2} exitosamente"))
             self.page.snack_bar.open = True
             self.page.snack_bar.bgcolor = 'green'
             self.page.update()
         except Exception as e:
             self.page.snack_bar = SnackBar(
-                ft.Text(f"No se ha podido borrar el parentezco entre {DPI1} y {DPI2} exitosamente"))
+                ft.Text(f"No se ha podido borrar el parentezco entre {dpi_1} y {dpi_2} exitosamente"))
             self.page.snack_bar.open = True
             self.page.snack_bar.bgcolor = 'red'
             self.page.update()
             print(e)
 
     # FALTA AGREGARLE FRONTEND
-    def ActivarCuentas(self, NoCuenta):
+    def ActivarCuentas(self, no_cuenta):
         try:
-            self.backend.activate_account(NoCuenta)
+            self.backend.activate_account(no_cuenta)
             self.page.snack_bar = SnackBar(
-                ft.Text(f"Se ha habilitado correctamente la cuenta {NoCuenta}"))
+                ft.Text(f"Se ha habilitado correctamente la cuenta {no_cuenta}"))
             self.page.snack_bar.open = True
             self.page.snack_bar.bgcolor = 'green'
             self.page.update()
-        except:
+        except Exception as e:  # Específico de Exception
             self.page.snack_bar = SnackBar(
-                ft.Text(f"No se ha habilitar la cuente {NoCuenta}"))
+                ft.Text(f"No se ha habilitar la cuenta {no_cuenta}")
+            )
             self.page.snack_bar.open = True
             self.page.snack_bar.bgcolor = 'red'
             self.page.update()
+            print(e)

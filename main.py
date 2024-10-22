@@ -3,7 +3,7 @@ Marco Jurado, Cristian Aguirre, Rodirgo Barrera'''
 
 '''
 motivos de fraude:
-    - transferencia o retiro mayor a 1.5 veces el promedio 
+    - transferencia o retiro mayor a 1.5 veces el promedio
     - transferencia o retiro con monto mayor a 100,000
     - transferencia a cuenta ligada a fraude
     - retiro de cuenta ligada a fraude
@@ -17,14 +17,19 @@ accion o pipeline:
 
 from Backend.backmain import BackendConn
 import flet as ft
-from flet import *
+from flet import Page, View
 from Frontend.Screens.homepage import create_homepage
 from Frontend.Screens.login import Login
 from Frontend.Screens.signup import SignUp
-import datetime
-uri = "neo4j+s://1ec7fe72.databases.neo4j.io"
-user = "neo4j"
-password = "fJqmpIyc4lLAOb4CAOV-RlwHeQxXstncLEkkMpQcg_Q"
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+# Obtener los valores de las credenciales desde las variables de entorno
+uri = os.getenv('NEO4J_URI')
+user = os.getenv('NEO4J_USER')
+password = os.getenv('NEO4J_PASSWORD')
 
 # instanciar backend y la conexion a Cypher.
 neo = BackendConn(uri, user, password)
@@ -35,7 +40,6 @@ def main(page: Page):
 
     page.title = "routing app"
     height = page.height
-    # login = Container(height=height, bgcolor='red')
     login = Login(page, height, neo)
     signup = SignUp(page, height, neo)
 

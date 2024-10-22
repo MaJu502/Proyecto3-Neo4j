@@ -1,8 +1,6 @@
-from flet import *
-from flet import alignment, margin, border_radius
+from flet import Text, alignment, margin, Container, TextField, TextStyle, ElevatedButton
 
-
-def InputText(text: str, hide: bool, width_par: int):
+def input_text(text: str, hide: bool, width_par: int):
     return TextField(
         label=text,
         label_style=TextStyle(color='#666C75'),
@@ -17,7 +15,7 @@ def InputText(text: str, hide: bool, width_par: int):
     )
 
 
-def Button(text: str):
+def button(text: str):
     return Container(
         alignment=alignment.center,
         margin=margin.only(top=15),

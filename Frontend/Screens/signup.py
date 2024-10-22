@@ -1,6 +1,6 @@
-from flet import *
+from flet import UserControl,  alignment, margin, Container, Column, Row, Image, Text, ElevatedButton, Checkbox, border_radius, padding
 import flet as ft
-from .components import InputText, Button
+from .components import input_text
 import datetime
 
 
@@ -13,12 +13,12 @@ class SignUp(UserControl):
         self.backend = backend
 
     def build(self):
-        nombreInput = InputText('Nombre', False, 155)
-        apellidoInput = InputText('Apellido', False, 155)
-        dpiInput = InputText('DPI', False, 270)
-        direccionInput = InputText('Direccion', False, 320)
-        dateInput = InputText('Fecha de nacimiento', False, 320)
-        adminCheckbox = Checkbox()
+        nombre_input = input_text('Nombre', False, 155)
+        apellido_input = input_text('Apellido', False, 155)
+        dpi_input = input_text('DPI', False, 270)
+        direccion_input = input_text('Direccion', False, 320)
+        date_input = input_text('Fecha de nacimiento', False, 320)
+        admin_check_box = Checkbox()
 
         return Container(
             alignment=alignment.center,
@@ -53,19 +53,19 @@ class SignUp(UserControl):
                                 Row([
                                     Container(
                                         alignment=alignment.center,
-                                        content=nombreInput
+                                        content=nombre_input
                                     ),
                                     Container(
                                         alignment=alignment.center,
-                                        content=apellidoInput
+                                        content=apellido_input
                                     ),
                                 ], alignment='center'),
 
                                 Row([
-                                    dpiInput,
+                                    dpi_input,
                                     Column(alignment='center',
                                            controls=[
-                                               adminCheckbox,
+                                               admin_check_box,
                                                Container(
                                                    margin=margin.only(top=-20),
                                                    content=(
@@ -75,11 +75,11 @@ class SignUp(UserControl):
                                 ], alignment='center'),
                                 Container(
                                     alignment=alignment.center,
-                                    content=direccionInput
+                                    content=direccion_input
                                 ),
                                 Container(
                                     alignment=alignment.center,
-                                    content=dateInput
+                                    content=date_input
                                 ),
                             ]
                         ),
@@ -88,12 +88,12 @@ class SignUp(UserControl):
                             margin=margin.only(top=15),
                             content=ElevatedButton(
                                 on_click=lambda _:self.CrearNodo(
-                                    nombreInput.value,
-                                    apellidoInput.value,
-                                    dpiInput.value,
-                                    direccionInput.value,
-                                    dateInput.value,
-                                    adminCheckbox.value
+                                    nombre_input.value,
+                                    apellido_input.value,
+                                    dpi_input.value,
+                                    direccion_input.value,
+                                    date_input.value,
+                                    admin_check_box.value
                                 ),
                                 content=Text(
                                     'Registrarse',
@@ -124,10 +124,10 @@ class SignUp(UserControl):
 
     def CrearNodo(self, nombre, apellido, dpi, direccion, date, admin):
         fecha = date.split("-")
-        Labels = ['Cliente']
+        labels = ['Cliente']
         if admin:
-            Labels.append('Admin')
-        self.backend.create_node(Labels, {
+            labels.append('Admin')
+        self.backend.create_node(labels, {
             'nombre': nombre,
             'apellido': apellido,
             'direccion': direccion,
@@ -140,25 +140,3 @@ class SignUp(UserControl):
         })
         self.DPI = dpi
         self.page.go('/home')
-
-    def obtener_numeros_fecha(self, cadena_fecha):
-        partes = cadena_fecha.split("-")
-        anio = int(partes[0])
-        mes = int(partes[1])
-        dia = int(partes[2])
-        return anio, mes, dia
-
-    def obtener_ano(self, cadena_fecha):
-        partes = cadena_fecha.split("-")
-        anio = int(partes[0])
-        return anio
-
-    def obtener_me(self, cadena_fecha):
-        partes = cadena_fecha.split("-")
-        anio = int(partes[0])
-        return anio
-
-    def obtener_ano(self, cadena_fecha):
-        partes = cadena_fecha.split("-")
-        anio = int(partes[0])
-        return anio
